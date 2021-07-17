@@ -1,0 +1,20 @@
+[
+  {
+    "spreadsheetId": "ID FROM URL",
+    "sheetName": "",
+    "cells": [
+      {
+        "cell": "A1",
+        "path": "./txt/a1.txt"
+      },
+      {
+        "cell": "B1",
+        "path": "./txt/b1.txt"
+      },
+      {
+        "cell": "C1",
+        "path": "./txt/c1.txt"
+      }
+    ]
+  }
+]
