@@ -1,7 +1,8 @@
 import { GoogleSheet } from './GoogleSheet'
 import * as credentials from '../credentials.json'
 import * as params from '../params.json'
-import { writeFileSync } from 'fs'
+import { writeFileSync, existsSync, mkdirSync } from 'fs'
+import { dirname } from 'path'
 
 const REFRESH_INTERVAL = 10
 
@@ -36,6 +37,9 @@ export class SheetTxt {
 
       sheetParams.cells.forEach((cellParams, cellIndex) => {
         const cellContents = cellsData[cellIndex]
+  
+        const dir = dirname(cellParams.path)
+        if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
 
         writeFileSync(cellParams.path, cellContents)
       })
