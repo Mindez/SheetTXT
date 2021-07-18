@@ -10,7 +10,13 @@ export class SheetTxt {
 
   public static async run (): Promise<void> {
     await this.init()
-    setInterval(this.refreshAll.bind(this), REFRESH_INTERVAL * 1000)
+
+    const tick = async () => {
+      await this.refreshAll.call(this)
+      setTimeout(tick, REFRESH_INTERVAL * 1000)
+    }
+
+    tick()
   }
 
   private static async init (): Promise<void> {
