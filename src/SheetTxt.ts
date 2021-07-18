@@ -35,7 +35,7 @@ export class SheetTxt {
         const cellContents = await this.sheets[sheetParams.spreadsheetId].getSingleCell(selectedSheet, cellParams.cell)
 
         const dir = dirname(cellParams.path)
-        if (!existsSync(dir)) mkdirSync(dir)
+        if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
 
         await writeFileSync(cellParams.path, cellContents)
       }))
