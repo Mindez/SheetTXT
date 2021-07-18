@@ -7,7 +7,7 @@ import { dirname } from 'path'
 const REFRESH_INTERVAL = 10
 
 export class SheetTxt {
-  private static sheets = {}
+  private static sheets: Record<string, GoogleSheet> = {}
 
   public static async run (): Promise<void> {
     await this.init()
@@ -31,14 +31,18 @@ export class SheetTxt {
   private static async refreshAll (): Promise<void> {
     await Promise.all(params.map(async sheetParams => {
       const selectedSheet = sheetParams.sheetName
-      await Promise.all(sheetParams.cells.map(async cellParams => {
-        const cellContents = await this.sheets[sheetParams.spreadsheetId].getSingleCell(selectedSheet, cellParams.cell)
 
+      const cellsRefs = sheetParams.cells.map(({ cell }) => cell)
+      const cellsData = await this.sheets[sheetParams.spreadsheetId].getCells(selectedSheet, ...cellsRefs)
+
+      sheetParams.cells.forEach((cellParams, cellIndex) => {
+        const cellContents = cellsData[cellIndex]
+  
         const dir = dirname(cellParams.path)
         if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
 
-        await writeFileSync(cellParams.path, cellContents)
-      }))
+        writeFileSync(cellParams.path, cellContents)
+      })
     }))
   }
 }

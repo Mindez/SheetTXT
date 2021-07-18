@@ -8,14 +8,14 @@ export class GoogleSheet {
     return this.api.title
   }
 
-  public async getSingleCell(sheetName: string, ref: string): Promise<string> {
+  public async getCells(sheetName: string, ...refs: string[]): Promise<string[]> {
     let sheet = this.api.sheetsByIndex[0]
     if (sheetName !== '') {
       sheet = this.api.sheetsByTitle[sheetName]
     }
 
-    await sheet.loadCells(`${ref}:${ref}`)
-    return await sheet.getCellByA1(ref).value
+    await sheet.loadCells(refs.map(ref => `${ref}:${ref}`))
+    return refs.map(ref => sheet.getCellByA1(ref).value)
   }
 
   public async authenticate(email: string, privateKey: string): Promise<void> {
