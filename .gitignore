@@ -1,3 +1,11 @@
 **/node_modules/**
-**/credentials.json
-**/txt/**
+
+# Keys
+credentials.json
+
+# Build Artifacts
+dist
+builds
+
+# Application Output
+txt

@@ -15,15 +15,17 @@ export class GoogleSheet {
     }
 
     await sheet.loadCells(refs.map(ref => `${ref}:${ref}`))
-    return refs.map(ref => sheet.getCellByA1(ref).value.toString())
+    return refs.map(ref => sheet.getCellByA1(ref).value?.toString() || '')
   }
 
   public async authenticate(email: string, privateKey: string): Promise<void> {
+    console.log('Authenticating...')
     await this.api.useServiceAccountAuth({
       client_email: email,
       private_key: privateKey
     })
     await this.api.loadInfo()
+    console.log('Authentication successful')
   }
 
   constructor(sheetId: string) {

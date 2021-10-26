@@ -4,7 +4,7 @@ import * as params from '../params.json'
 import { writeFileSync, existsSync, mkdirSync } from 'fs'
 import { dirname } from 'path'
 
-const REFRESH_INTERVAL = 10
+const SYNC_INTERVAL = 10
 
 export class SheetTxt {
   private static sheets: Record<string, GoogleSheet> = {}
@@ -12,12 +12,12 @@ export class SheetTxt {
   public static async run (): Promise<void> {
     await this.init()
 
-    const tick = async () => {
-      await this.refreshAll.call(this)
-      setTimeout(tick, REFRESH_INTERVAL * 1000)
+    const syncTick = async () => {
+      await this.syncAll.call(this)
+      setTimeout(syncTick, SYNC_INTERVAL * 1000)
     }
 
-    tick()
+    await syncTick()
   }
 
   private static async init (): Promise<void> {
@@ -25,24 +25,31 @@ export class SheetTxt {
       const sheet = new GoogleSheet(sheetParams.spreadsheetId)
       await sheet.authenticate(credentials.client_email, credentials.private_key)
       this.sheets[sheetParams.spreadsheetId] = sheet
+      console.log(`Watching sheet "${sheetParams.sheetName}" in spreadsheet with ID ${sheetParams.spreadsheetId} (refreshing every ${SYNC_INTERVAL} seconds)`)
     }))
   }
 
-  private static async refreshAll (): Promise<void> {
+  private static async syncAll (): Promise<void> {
+    console.log(`# Syncing at ${new Date()}`)
     await Promise.all(params.map(async sheetParams => {
       const selectedSheet = sheetParams.sheetName
-
       const cellsRefs = sheetParams.cells.map(({ cell }) => cell)
-      const cellsData = await this.sheets[sheetParams.spreadsheetId].getCells(selectedSheet, ...cellsRefs)
-
-      sheetParams.cells.forEach((cellParams, cellIndex) => {
-        const cellContents = cellsData[cellIndex]
-  
-        const dir = dirname(cellParams.path)
-        if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
-
-        writeFileSync(cellParams.path, cellContents)
-      })
+      try {
+        const cellsData = await this.sheets[sheetParams.spreadsheetId].getCells(selectedSheet, ...cellsRefs)
+        sheetParams.cells.forEach((cellParams, cellIndex) => {
+          const cellContents = cellsData[cellIndex]
+          const dir = dirname(cellParams.path)
+          if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
+          writeFileSync(cellParams.path, cellContents)
+        })
+      } catch (e: any) {
+        console.log(`*****ERROR DURING SYNC: ${e.message ?? e}*****`)
+        try {
+          await this.sheets[sheetParams.spreadsheetId].authenticate(credentials.client_email, credentials.private_key)
+        } catch (e: any) {
+          console.log(`*****ERROR DURING AUTH: ${e.message ?? e}*****`)
+        }
+      }
     }))
   }
 }
