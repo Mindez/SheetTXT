@@ -39,3 +39,47 @@ The structure of params.json is as follows:
   ...Add more spreadsheets here
 ]
 ```
+
+## Building an Executable
+
+For convenience, you can build an executable that allows you to package the app for distribution with a portable restreamer package. This will hardcode the params.json and credentials.json. Tech-savvy users may be able to extract the credentials, which is why the IAM Service Acccount should be set up on a minimum permission level basis, only having access to the spreadsheet that they need to be able to access and not reused for other purposes.
+
+Our build process is in three phases: One step to build the typescript in the `dist` folder, one step to remove non-production dependencies, and one step to use pkg to build the compiled `dist` folder into an exe for distribution.
+
+To run the build process:-
+
+```
+npm run build
+npm run prune
+npm run compile
+```
+
+The distributable exe will then be placed in the `builds` folder with the name `sheettxt-[timestamp].exe`. Note that all text files will be created relative to where the exe is run from. This is currently designed to work for Windows - distributable packages for other operating systems can be created by changing the config for `pkg`.
+
+## Future Feature List
+
+Keeping a note here of future extensibility features that it would be nice to add. If you want to contribute, consider building one of the features on this list. These features are very high level and have not undergone any analysis, so some may not be possible.
+
+- Authentication frontend
+  - Rather than bundling credentials, allow users to use oauth to sign in with their own google accounts
+
+- Externally configurable params.json
+  - Allow the params.json to be controlled from outside of the built distributable executable, so that a new build doesn't have to be done to change hardcoded values
+
+- Configuration Dashboard
+  - Configure the params.json from a frontend, allowing changes to be saved and reloaded when a change is made
+
+- Params Profiles
+  - Allow params.json to be saved, loaded, exported and easily enabled/disabled
+
+- Push Notifications
+  - Update the text files not on a 10 second timer, but when things actually change, if possible
+
+- Image Sync
+  - Sync images or other binary data as well as text
+
+- OBS Plugin
+  - A SheetTXT source built into OBS that uses SheetTXT to sync a cell directly with a text field in the scene
+
+- Stream Deck Plugin
+  - Start/stop syncing and switch between profiles, all from the comfort of your own Stream Deck
