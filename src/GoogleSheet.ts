@@ -15,7 +15,9 @@ export class GoogleSheet {
     }
 
     await sheet.loadCells(refs.map(ref => `${ref}:${ref}`))
-    return refs.map(ref => sheet.getCellByA1(ref).value?.toString() || '')
+    const values = refs.map(ref => sheet.getCellByA1(ref).value)
+    const strings = values.map(s => typeof s === 'object' ? '' : s)
+    return strings.map(s => s.toString())
   }
 
   public async authenticate(email: string, privateKey: string): Promise<void> {
