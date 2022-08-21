@@ -6,6 +6,8 @@ import { dirname } from 'path'
 
 const SYNC_INTERVAL = 10
 
+const contentCache = {}
+
 export class SheetTxt {
   private static sheets: Record<string, GoogleSheet> = {}
 
@@ -40,7 +42,11 @@ export class SheetTxt {
           const cellContents = cellsData[cellIndex]
           const dir = dirname(cellParams.path)
           if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
-          writeFileSync(cellParams.path, cellContents)
+          if (contentCache[cellParams.path] !== cellContents) {
+            console.log('Updated: ' + cellParams.path)
+            contentCache[cellParams.path] = cellContents
+            writeFileSync(cellParams.path, cellContents)
+          }
         })
       } catch (e: any) {
         console.log(`*****ERROR DURING SYNC: ${e.message ?? e}*****`)

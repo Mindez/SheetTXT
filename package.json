@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc index.ts --resolveJsonModule --target es6 --moduleResolution node --module commonjs --outDir dist",
     "prune": "npm prune --production",
-    "compile": "pkg . --output builds/sheettxt-$(date +%Y%m%d%H%M%S).exe"
+    "compile": "npx pkg . --output builds/sheettxt-$(date +%Y%m%d%H%M%S).exe"
   },
   "author": "",
   "license": "ISC",
