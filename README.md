@@ -6,7 +6,7 @@ Useful, for example, when dealing with OBS Text Sources to allow data to be modi
 
 Currently polls the sheet for updates every 10 seconds.
 
-## Quick Start Guid (for developers)
+## Quick Start Guide (for developers)
 
 - Clone the repository
 - `npm install`
