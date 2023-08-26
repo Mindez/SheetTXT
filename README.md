@@ -6,8 +6,9 @@ Useful, for example, when dealing with OBS Text Sources to allow data to be modi
 
 Currently polls the sheet for updates every 10 seconds.
 
-## Quick Start Guide
+## Quick Start Guide (for developers)
 
+- Clone the repository
 - `npm install`
 - Create a Google IAM Service Account at https://console.developers.google.com/iam-admin/serviceaccounts/
 - Create and download a key for the Service Account in JSON format and put them in the root directory as `credentials.json`
@@ -42,7 +43,7 @@ The structure of params.json is as follows:
 
 ## Building an Executable
 
-For convenience, you can build an executable that allows you to package the app for distribution with a portable restreamer package. This will hardcode the params.json and credentials.json. Tech-savvy users may be able to extract the credentials, which is why the IAM Service Acccount should be set up on a minimum permission level basis, only having access to the spreadsheet that they need to be able to access and not reused for other purposes.
+For convenience, you can build an executable that allows you to package the app for distribution with a portable restreamer package. The executable just needs a valid params.json and credentials.json in the same folder in order to work. See the quick start guide above for instructions on generating valid credentials.
 
 Our build process is in three phases: One step to build the typescript in the `dist` folder, one step to remove non-production dependencies, and one step to use pkg to build the compiled `dist` folder into an exe for distribution.
 
@@ -63,11 +64,14 @@ Keeping a note here of future extensibility features that it would be nice to ad
 - Authentication frontend
   - Rather than bundling credentials, allow users to use oauth to sign in with their own google accounts
 
-- Externally configurable params.json
+- Externally configurable params.json - **DONE**
   - Allow the params.json to be controlled from outside of the built distributable executable, so that a new build doesn't have to be done to change hardcoded values
 
 - Configuration Dashboard
   - Configure the params.json from a frontend, allowing changes to be saved and reloaded when a change is made
+
+- Param/Credential Validation
+  - Better error messages rather than the app just not starting if param files are not present or are malformed
 
 - Params Profiles
   - Allow params.json to be saved, loaded, exported and easily enabled/disabled

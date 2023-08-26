@@ -1,12 +1,14 @@
 import { GoogleSheet } from './GoogleSheet'
-import * as credentials from '../credentials.json'
-import * as params from '../params.json'
-import { writeFileSync, existsSync, mkdirSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { dirname } from 'path'
 
 const SYNC_INTERVAL = 10
+const CREDENTIALS_FILE_PATH = "./credentials.json"
+const PARAMS_FILE_PATH = "./params.json"
 
 const contentCache = {}
+let credentials : any = {}
+let params : any[] = []
 
 export class SheetTxt {
   private static sheets: Record<string, GoogleSheet> = {}
@@ -22,7 +24,18 @@ export class SheetTxt {
     await syncTick()
   }
 
+  private static readJsonFile (path): any {
+    const file = readFileSync(path, 'utf8')
+    try {
+      return JSON.parse(file)
+    } catch (e: any) {
+      console.log(`*****ERROR DURING PARSE: ${e.message ?? e}*****`)
+    }
+  }
+
   private static async init (): Promise<void> {
+    params = this.readJsonFile(PARAMS_FILE_PATH)
+    credentials = this.readJsonFile(CREDENTIALS_FILE_PATH)
     await Promise.all(params.map(async sheetParams => {
       const sheet = new GoogleSheet(sheetParams.spreadsheetId)
       await sheet.authenticate(credentials.client_email, credentials.private_key)
